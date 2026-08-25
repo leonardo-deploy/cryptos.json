@@ -77,8 +77,8 @@ flowchart LR
 Requisitos: Python 3.11 ou superior e Git.
 
 ```bash
-git clone https://github.com/leonardo-deploy/criptos.json.streamlit.app.git
-cd criptos.json.streamlit.app
+git clone https://github.com/leonardo-deploy/cryptos.json.git
+cd cryptos.json
 python -m venv .venv
 ```
 
