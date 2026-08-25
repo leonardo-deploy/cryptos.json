@@ -21,7 +21,8 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 - Coleta paginada de até 20.000 ativos por execução.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
-- Repetição automática para falhas temporárias e respeito ao `Retry-After` da API.
+- Cinco tentativas por página, pausa especial para HTTP 429 e continuidade após falhas persistentes.
+- Coleta em blocos de quatro páginas, com pausa adicional de 60 segundos entre blocos.
 - Pesquisa e prévia tabular antes do download.
 - JSON UTF-8, versionado e ordenado por capitalização de mercado.
 - Compatibilidade com o campo legado `current_price_brl` quando a moeda é BRL.
