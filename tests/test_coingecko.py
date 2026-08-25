@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.coingecko import CoinGeckoClient
+from src.coingecko import CoinGeckoClient, FetchProgress
 
 
 def _response(payload: object, status: int = 200) -> Mock:
@@ -24,7 +24,8 @@ def test_fetch_continues_when_a_page_is_short_or_empty() -> None:
 
     assert result == [{"id": "bitcoin"}]
     assert session.get.call_count == 2
-    sleep.assert_called_once_with(30)
+    assert sleep.call_count == 30
+    sleep.assert_called_with(1)
 
 
 def test_fetch_explains_rate_limit() -> None:
@@ -49,3 +50,23 @@ def test_fetch_enforces_page_and_delay_limits() -> None:
 
     with pytest.raises(ValueError, match="pelo menos 30 segundos"):
         client.fetch_markets(pages=2, delay_seconds=29)
+
+
+def test_fetch_reports_page_and_block_countdowns() -> None:
+    session = Mock()
+    session.headers = {}
+    session.get.side_effect = [_response([{"id": f"coin-{page}"}]) for page in range(1, 6)]
+    client = CoinGeckoClient(session=session)
+    events: list[FetchProgress] = []
+
+    with patch("src.coingecko.time.sleep") as sleep:
+        client.fetch_markets(
+            pages=5,
+            per_page=1,
+            delay_seconds=30,
+            progress_callback=events.append,
+        )
+
+    assert any(event.wait_label == "Intervalo entre páginas" and event.wait_seconds == 30 for event in events)
+    assert any(event.wait_label == "Pausa após bloco de 4 páginas" and event.wait_seconds == 60 for event in events)
+    assert sleep.call_count == 180

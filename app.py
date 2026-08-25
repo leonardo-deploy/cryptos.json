@@ -123,13 +123,20 @@ if "catalog" not in st.session_state:
 if generate:
     progress_bar = st.progress(0, text="Preparando a coleta…")
     status_box = st.empty()
+    page_column, crypto_column, seconds_column = st.columns(3)
+    page_counter = page_column.empty()
+    crypto_counter = crypto_column.empty()
+    seconds_counter = seconds_column.empty()
 
     def update_progress(progress: FetchProgress) -> None:
         ratio = min(progress.page / pages, 1.0)
         progress_bar.progress(
             ratio,
-            text=f"Página {progress.page}/{pages} · {progress.collected:,} criptomoedas coletadas".replace(",", "."),
+            text=f"Página {progress.page}/{pages} · {progress.collected:,} criptomoedas consultadas".replace(",", "."),
         )
+        page_counter.metric("Páginas consultadas", f"{progress.page}/{pages}")
+        crypto_counter.metric("Criptos consultadas", f"{progress.collected:,}".replace(",", "."))
+        seconds_counter.metric(progress.wait_label or "Próxima consulta", f"{progress.wait_seconds} s" if progress.wait_seconds else "—")
         status_box.caption(progress.message)
 
     client = CoinGeckoClient(api_key=api_key or None)
@@ -145,6 +152,7 @@ if generate:
         st.session_state.catalog = catalog
         st.session_state.catalog_bytes = catalog_to_json(catalog)
         progress_bar.progress(1.0, text="Catálogo concluído")
+        seconds_counter.metric("Próxima consulta", "—")
         status_box.empty()
         st.toast(f"{catalog['total']:,} criptomoedas prontas para download!".replace(",", "."), icon="✅")
     except CoinGeckoError as exc:
