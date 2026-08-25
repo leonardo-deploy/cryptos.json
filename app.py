@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from src.coingecko import CoinGeckoClient, CoinGeckoError, FetchProgress
 from src.exporter import build_catalog, catalog_to_json
@@ -18,6 +19,24 @@ st.set_page_config(
     page_icon="🪙",
     layout="wide",
     initial_sidebar_state="expanded",
+)
+
+components.html(
+    """
+    <script>
+      const title = "CryptosJson";
+      const parentDocument = window.parent.document;
+      const applyTitle = () => {
+        if (parentDocument.title !== title) parentDocument.title = title;
+      };
+      applyTitle();
+      const titleElement = parentDocument.querySelector("title");
+      if (titleElement) {
+        new MutationObserver(applyTitle).observe(titleElement, { childList: true });
+      }
+    </script>
+    """,
+    height=0,
 )
 
 st.markdown(
