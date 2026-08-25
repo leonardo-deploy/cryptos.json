@@ -16,6 +16,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pages", type=int, default=4)
     parser.add_argument("--per-page", type=int, default=250)
     parser.add_argument("--delay", type=float, default=30.0)
+    parser.add_argument("--block-delay", type=float, default=60.0)
     parser.add_argument("--output", type=Path, default=Path("cryptos.json"))
     return parser.parse_args()
 
@@ -32,6 +33,7 @@ def main() -> None:
         pages=args.pages,
         per_page=args.per_page,
         delay_seconds=args.delay,
+        block_delay_seconds=args.block_delay,
         progress_callback=report,
     )
     payload = catalog_to_json(build_catalog(coins, currency=args.currency))
