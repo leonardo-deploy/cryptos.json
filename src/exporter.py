@@ -61,6 +61,15 @@ def build_catalog(
             item["name"].casefold(),
         )
     )
+    next_fallback_rank = max(
+        (int(item["market_cap_rank"]) for item in normalized_coins if item["market_cap_rank"] is not None),
+        default=0,
+    ) + 1
+    for item in normalized_coins:
+        if item["market_cap_rank"] is None:
+            item["market_cap_rank"] = next_fallback_rank
+            next_fallback_rank += 1
+
     timestamp = generated_at or datetime.now(BRASILIA_TIMEZONE)
     if timestamp.tzinfo is None:
         timestamp = timestamp.replace(tzinfo=BRASILIA_TIMEZONE)
