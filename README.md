@@ -21,6 +21,7 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 - Coleta paginada de até 20.000 ativos por execução.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
+- Contadores ao vivo de páginas, criptos consultadas e segundos restantes entre páginas e blocos.
 - Cinco tentativas por página, pausa especial para HTTP 429 e continuidade após falhas persistentes.
 - Coleta em blocos de quatro páginas, com pausa adicional de 60 segundos entre blocos.
 - Pesquisa e prévia tabular antes do download.
