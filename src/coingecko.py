@@ -88,6 +88,7 @@ class CoinGeckoClient:
         pages: int = 4,
         per_page: int = 250,
         delay_seconds: float = 30.0,
+        block_delay_seconds: float = BLOCK_DELAY_SECONDS,
         progress_callback: ProgressCallback | None = None,
     ) -> list[dict[str, Any]]:
         """Coleta páginas em blocos, repetindo falhas e preservando resultados parciais."""
@@ -100,6 +101,8 @@ class CoinGeckoClient:
             raise ValueError("O total por página deve ficar entre 1 e 250.")
         if pages > 1 and delay_seconds < 30:
             raise ValueError("O intervalo entre páginas deve ser de pelo menos 30 segundos.")
+        if block_delay_seconds < BLOCK_DELAY_SECONDS:
+            raise ValueError("O intervalo entre blocos deve ser de pelo menos 60 segundos.")
 
         collected: list[dict[str, Any]] = []
         for page in range(1, pages + 1):
@@ -171,7 +174,7 @@ class CoinGeckoClient:
                 )
                 if page % PAGES_PER_BLOCK == 0:
                     _wait_with_countdown(
-                        BLOCK_DELAY_SECONDS,
+                        block_delay_seconds,
                         page=page,
                         collected=len(collected),
                         label=f"Pausa após bloco de {PAGES_PER_BLOCK} páginas",

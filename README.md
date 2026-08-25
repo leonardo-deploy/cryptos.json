@@ -26,6 +26,7 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 - Coleta em blocos de quatro páginas, com pausa adicional de 60 segundos entre blocos.
 - Pesquisa e prévia tabular antes do download.
 - JSON UTF-8, versionado e ordenado por capitalização de mercado.
+- Ranking sequencial de fallback para ativos sem posição informada pela CoinGecko.
 - Compatibilidade com o campo legado `current_price_brl` quando a moeda é BRL.
 - Modo CLI para automações e rotinas locais.
 - Núcleo modular, testes automatizados e configuração pronta para deploy.
@@ -140,6 +141,7 @@ Parâmetros disponíveis:
 | `--pages` | `4` | Quantidade de páginas (1 a 80) |
 | `--per-page` | `250` | Registros por página (1 a 250) |
 | `--delay` | `30.0` | Intervalo em segundos entre páginas (mínimo de 30) |
+| `--block-delay` | `60.0` | Pausa adicional entre blocos de quatro páginas (mínimo de 60) |
 | `--output` | `cryptos.json` | Caminho do arquivo de saída |
 
 ## 🧪 Qualidade do código

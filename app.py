@@ -46,6 +46,7 @@ st.markdown(
         background: rgba(15,23,42,.62); border: 1px solid rgba(148,163,184,.13);
         border-radius: 16px; padding: .75rem 1rem;
       }
+      [data-testid="stMetricValue"] { white-space: pre-line; line-height: 1.2; }
       .stButton > button, .stDownloadButton > button { border-radius: 12px; min-height: 2.8rem; font-weight: 700; }
       .stButton > button[kind="primary"], .stDownloadButton > button[kind="primary"] {
         border: 0; background: linear-gradient(90deg, var(--accent), #6d5dfc 55%, var(--accent-2));
@@ -76,7 +77,7 @@ def _format_timestamp(value: str | None) -> str:
         timestamp = datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(
             ZoneInfo("America/Sao_Paulo")
         )
-        return timestamp.strftime("%d/%m/%Y %H:%M (Brasília)")
+        return timestamp.strftime("%d/%m/%Y %H:%M\n(Brasília)")
     except ValueError:
         return value
 
@@ -103,6 +104,9 @@ with st.sidebar:
     per_page = st.select_slider("Criptos por página", options=[50, 100, 150, 200, 250], value=250)
     request_delay = st.slider(
         "Intervalo entre páginas (s)", min_value=30.0, max_value=120.0, value=30.0, step=5.0
+    )
+    block_delay = st.slider(
+        "Intervalo entre blocos (s)", min_value=60.0, max_value=600.0, value=60.0, step=30.0
     )
     api_key = st.text_input(
         "Chave Demo da CoinGecko (opcional)",
@@ -146,6 +150,7 @@ if generate:
             pages=pages,
             per_page=per_page,
             delay_seconds=request_delay,
+            block_delay_seconds=block_delay,
             progress_callback=update_progress,
         )
         catalog = build_catalog(coins, currency=currency)
@@ -167,7 +172,7 @@ if generate:
 catalog: dict[str, Any] | None = st.session_state.catalog
 
 if catalog:
-    total, updated, source, output_currency = st.columns(4)
+    total, updated, source, output_currency = st.columns([1, 1.35, 1, 1])
     total.metric("Criptomoedas", f"{catalog['total']:,}".replace(",", "."))
     updated.metric("Atualizado em", _format_timestamp(catalog.get("last_updated_timestamp")))
     source.metric("Fonte", "CoinGecko")
