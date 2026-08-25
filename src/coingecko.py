@@ -68,19 +68,19 @@ class CoinGeckoClient:
         currency: str = "brl",
         pages: int = 4,
         per_page: int = 250,
-        delay_seconds: float = 2.0,
+        delay_seconds: float = 30.0,
         progress_callback: ProgressCallback | None = None,
     ) -> list[dict[str, Any]]:
         """Coleta páginas de mercado e encerra ao encontrar uma página vazia."""
         currency = currency.lower()
         if currency not in SUPPORTED_CURRENCIES:
             raise ValueError(f"Moeda não suportada: {currency}")
-        if not 1 <= pages <= 40:
-            raise ValueError("O total de páginas deve ficar entre 1 e 40.")
+        if not 1 <= pages <= 80:
+            raise ValueError("O total de páginas deve ficar entre 1 e 80.")
         if not 1 <= per_page <= 250:
             raise ValueError("O total por página deve ficar entre 1 e 250.")
-        if delay_seconds < 0:
-            raise ValueError("O intervalo não pode ser negativo.")
+        if pages > 1 and delay_seconds < 30:
+            raise ValueError("O intervalo entre páginas deve ser de pelo menos 30 segundos.")
 
         collected: list[dict[str, Any]] = []
         for page in range(1, pages + 1):
@@ -133,4 +133,3 @@ class CoinGeckoClient:
         if not collected:
             raise CoinGeckoError("Nenhuma criptomoeda foi encontrada para gerar o catálogo.")
         return collected
-
