@@ -51,6 +51,9 @@ def test_fetch_enforces_page_and_delay_limits() -> None:
     with pytest.raises(ValueError, match="pelo menos 30 segundos"):
         client.fetch_markets(pages=2, delay_seconds=29)
 
+    with pytest.raises(ValueError, match="pelo menos 60 segundos"):
+        client.fetch_markets(block_delay_seconds=59)
+
 
 def test_fetch_reports_page_and_block_countdowns() -> None:
     session = Mock()
