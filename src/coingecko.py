@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from math import ceil
 from typing import Any
 
 import requests
@@ -26,9 +27,36 @@ class FetchProgress:
     page: int
     collected: int
     message: str
+    wait_seconds: int | None = None
+    wait_label: str | None = None
 
 
 ProgressCallback = Callable[[FetchProgress], None]
+
+
+def _wait_with_countdown(
+    seconds: float,
+    *,
+    page: int,
+    collected: int,
+    label: str,
+    progress_callback: ProgressCallback | None,
+) -> None:
+    """Aguarda o intervalo informando, a cada segundo, quanto tempo ainda resta."""
+    remaining = ceil(seconds)
+    while remaining > 0:
+        if progress_callback:
+            progress_callback(
+                FetchProgress(
+                    page,
+                    collected,
+                    f"{label}: {remaining} segundo{'s' if remaining != 1 else ''}.",
+                    wait_seconds=remaining,
+                    wait_label=label,
+                )
+            )
+        time.sleep(1)
+        remaining -= 1
 
 
 class CoinGeckoClient:
@@ -134,16 +162,20 @@ class CoinGeckoClient:
                     progress_callback(FetchProgress(page, len(collected), f"Página {page} concluída."))
 
             if page < pages:
-                time.sleep(delay_seconds)
+                _wait_with_countdown(
+                    delay_seconds,
+                    page=page,
+                    collected=len(collected),
+                    label="Intervalo entre páginas",
+                    progress_callback=progress_callback,
+                )
                 if page % PAGES_PER_BLOCK == 0:
-                    if progress_callback:
-                        progress_callback(
-                            FetchProgress(
-                                page,
-                                len(collected),
-                                f"Bloco de {PAGES_PER_BLOCK} páginas concluído; aguardando 60 segundos…",
-                            )
-                        )
-                    time.sleep(BLOCK_DELAY_SECONDS)
+                    _wait_with_countdown(
+                        BLOCK_DELAY_SECONDS,
+                        page=page,
+                        collected=len(collected),
+                        label=f"Pausa após bloco de {PAGES_PER_BLOCK} páginas",
+                        progress_callback=progress_callback,
+                    )
 
         return collected
