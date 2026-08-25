@@ -10,6 +10,7 @@ def test_build_catalog_normalizes_deduplicates_and_sorts() -> None:
         {"id": "ether", "symbol": "eth", "name": "Ether", "current_price": 20, "market_cap_rank": 2},
         {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "current_price": 30, "market_cap_rank": 1},
         {"id": "bitcoin", "symbol": "btc", "name": "Duplicado", "current_price": 99, "market_cap_rank": 3},
+        {"id": "sem-rank", "symbol": "sr", "name": "Sem Rank", "current_price": 10, "market_cap_rank": None},
         {"id": "incompleto", "symbol": "", "name": "Ignorado"},
     ]
     catalog = build_catalog(
@@ -18,11 +19,12 @@ def test_build_catalog_normalizes_deduplicates_and_sorts() -> None:
         generated_at=datetime(2026, 8, 24, 12, 0, tzinfo=timezone.utc),
     )
 
-    assert catalog["total"] == 2
+    assert catalog["total"] == 3
     assert catalog["last_updated_timestamp"] == "2026-08-24T09:00:00-03:00"
-    assert [coin["id"] for coin in catalog["cryptos"]] == ["bitcoin", "ether"]
+    assert [coin["id"] for coin in catalog["cryptos"]] == ["bitcoin", "ether", "sem-rank"]
     assert catalog["cryptos"][0]["symbol"] == "BTC"
     assert catalog["cryptos"][0]["current_price_brl"] == 30
+    assert catalog["cryptos"][2]["market_cap_rank"] == 3
 
 
 def test_catalog_to_json_keeps_unicode_and_rejects_nan() -> None:
