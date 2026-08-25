@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
@@ -13,7 +14,7 @@ from src.coingecko import CoinGeckoClient, CoinGeckoError, FetchProgress
 from src.exporter import build_catalog, catalog_to_json
 
 st.set_page_config(
-    page_title="CryptoJSON Studio",
+    page_title="CryptosJson",
     page_icon="🪙",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -72,7 +73,10 @@ def _format_timestamp(value: str | None) -> str:
     if not value:
         return "—"
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00")).strftime("%d/%m/%Y %H:%M UTC")
+        timestamp = datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(
+            ZoneInfo("America/Sao_Paulo")
+        )
+        return timestamp.strftime("%d/%m/%Y %H:%M (Brasília)")
     except ValueError:
         return value
 
@@ -95,10 +99,10 @@ with st.sidebar:
         options=["brl", "usd", "eur"],
         format_func=lambda item: {"brl": "Real (BRL)", "usd": "Dólar (USD)", "eur": "Euro (EUR)"}[item],
     )
-    pages = st.slider("Páginas da API", min_value=1, max_value=40, value=4)
+    pages = st.slider("Páginas da API", min_value=1, max_value=80, value=4)
     per_page = st.select_slider("Criptos por página", options=[50, 100, 150, 200, 250], value=250)
     request_delay = st.slider(
-        "Intervalo entre requisições (s)", min_value=0.0, max_value=10.0, value=2.0, step=0.5
+        "Intervalo entre páginas (s)", min_value=30.0, max_value=120.0, value=30.0, step=5.0
     )
     api_key = st.text_input(
         "Chave Demo da CoinGecko (opcional)",
