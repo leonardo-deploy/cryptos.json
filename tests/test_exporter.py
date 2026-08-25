@@ -19,7 +19,7 @@ def test_build_catalog_normalizes_deduplicates_and_sorts() -> None:
     )
 
     assert catalog["total"] == 2
-    assert catalog["last_updated_timestamp"] == "2026-08-24T12:00:00Z"
+    assert catalog["last_updated_timestamp"] == "2026-08-24T09:00:00-03:00"
     assert [coin["id"] for coin in catalog["cryptos"]] == ["bitcoin", "ether"]
     assert catalog["cryptos"][0]["symbol"] == "BTC"
     assert catalog["cryptos"][0]["current_price_brl"] == 30
@@ -31,4 +31,3 @@ def test_catalog_to_json_keeps_unicode_and_rejects_nan() -> None:
 
     with pytest.raises(ValueError):
         catalog_to_json({"price": float("nan")})
-
