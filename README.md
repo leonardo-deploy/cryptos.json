@@ -7,6 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-ready-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![CoinGecko](https://img.shields.io/badge/data-CoinGecko-8DC63F)](https://www.coingecko.com/)
+[![Qualidade](https://github.com/leonardo-deploy/cryptos.json/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardo-deploy/cryptos.json/actions/workflows/ci.yml)
 
 Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pesquisável e disponível para download — diretamente pelo navegador.
 
@@ -26,6 +27,7 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 - Compatibilidade com o campo legado `current_price_brl` quando a moeda é BRL.
 - Modo CLI para automações e rotinas locais.
 - Núcleo modular, testes automatizados e configuração pronta para deploy.
+- Integração contínua no GitHub Actions para testes e lint em cada pull request.
 
 ## 🖥️ Como funciona
 
