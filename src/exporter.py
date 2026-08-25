@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
+from zoneinfo import ZoneInfo
+
+BRASILIA_TIMEZONE = ZoneInfo("America/Sao_Paulo")
 
 
 def _number(value: Any) -> int | float | None:
@@ -58,8 +61,12 @@ def build_catalog(
             item["name"].casefold(),
         )
     )
-    timestamp = (generated_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
-    iso_timestamp = timestamp.isoformat(timespec="seconds").replace("+00:00", "Z")
+    timestamp = generated_at or datetime.now(BRASILIA_TIMEZONE)
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=BRASILIA_TIMEZONE)
+    else:
+        timestamp = timestamp.astimezone(BRASILIA_TIMEZONE)
+    iso_timestamp = timestamp.isoformat(timespec="seconds")
     return {
         "schema_version": 1,
         "last_updated_timestamp": iso_timestamp,
@@ -72,4 +79,3 @@ def build_catalog(
 
 def catalog_to_json(catalog: dict[str, Any]) -> bytes:
     return json.dumps(catalog, ensure_ascii=False, indent=2, allow_nan=False).encode("utf-8")
-
