@@ -1,8 +1,8 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
-from src.coingecko import CoinGeckoClient, CoinGeckoError
+from src.coingecko import CoinGeckoClient
 
 
 def _response(payload: object, status: int = 200) -> Mock:
@@ -13,32 +13,36 @@ def _response(payload: object, status: int = 200) -> Mock:
     return response
 
 
-def test_fetch_stops_when_last_page_is_short() -> None:
+def test_fetch_continues_when_a_page_is_short_or_empty() -> None:
     session = Mock()
     session.headers = {}
-    session.mount = Mock()
-    session.get.return_value = _response([{"id": "bitcoin"}])
+    session.get.side_effect = [_response([{"id": "bitcoin"}]), _response([])]
     client = CoinGeckoClient(session=session)
 
-    result = client.fetch_markets(pages=5, per_page=250, delay_seconds=30)
+    with patch("src.coingecko.time.sleep") as sleep:
+        result = client.fetch_markets(pages=2, per_page=250, delay_seconds=30)
 
     assert result == [{"id": "bitcoin"}]
-    session.get.assert_called_once()
+    assert session.get.call_count == 2
+    sleep.assert_called_once_with(30)
 
 
 def test_fetch_explains_rate_limit() -> None:
     session = Mock()
     session.headers = {}
-    session.mount = Mock()
-    session.get.return_value = _response([], status=429)
+    session.get.side_effect = [_response([], status=429), _response([])]
     client = CoinGeckoClient(session=session)
 
-    with pytest.raises(CoinGeckoError, match="limite temporário"):
-        client.fetch_markets()
+    with patch("src.coingecko.time.sleep") as sleep:
+        result = client.fetch_markets(pages=1)
+
+    assert result == []
+    assert session.get.call_count == 2
+    sleep.assert_called_once_with(60)
 
 
 def test_fetch_enforces_page_and_delay_limits() -> None:
-    client = CoinGeckoClient(session=Mock(headers={}, mount=Mock()))
+    client = CoinGeckoClient(session=Mock(headers={}))
 
     with pytest.raises(ValueError, match="entre 1 e 80"):
         client.fetch_markets(pages=81)
