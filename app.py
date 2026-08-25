@@ -25,15 +25,25 @@ components.html(
     """
     <script>
       const title = "CryptosJson";
-      const parentDocument = window.parent.document;
+      const documents = [];
+      let currentWindow = window;
+      while (true) {
+        try {
+          documents.push(currentWindow.document);
+          if (currentWindow === currentWindow.parent) break;
+          currentWindow.parent.document;
+          currentWindow = currentWindow.parent;
+        } catch (_) {
+          break;
+        }
+      }
       const applyTitle = () => {
-        if (parentDocument.title !== title) parentDocument.title = title;
+        documents.forEach((document) => {
+          if (document.title !== title) document.title = title;
+        });
       };
       applyTitle();
-      const titleElement = parentDocument.querySelector("title");
-      if (titleElement) {
-        new MutationObserver(applyTitle).observe(titleElement, { childList: true });
-      }
+      window.setInterval(applyTitle, 250);
     </script>
     """,
     height=0,
