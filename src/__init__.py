@@ -1,0 +1,2 @@
+"""Núcleo do CryptoJSON Studio."""
+
