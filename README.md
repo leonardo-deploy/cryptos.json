@@ -18,10 +18,11 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 ## ✨ O que o projeto oferece
 
 - Interface moderna e responsiva construída com Streamlit.
-- Coleta paginada de até 10.000 ativos por execução.
+- Coleta paginada de até 20.000 ativos por execução.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
-- Repetição automática para falhas temporárias e respeito ao `Retry-After` da API.
+- Cinco tentativas por página, pausa especial para HTTP 429 e continuidade após falhas persistentes.
+- Coleta em blocos de quatro páginas, com pausa adicional de 60 segundos entre blocos.
 - Pesquisa e prévia tabular antes do download.
 - JSON UTF-8, versionado e ordenado por capitalização de mercado.
 - Compatibilidade com o campo legado `current_price_brl` quando a moeda é BRL.
@@ -50,7 +51,7 @@ flowchart LR
 ```json
 {
   "schema_version": 1,
-  "last_updated_timestamp": "2026-08-24T12:00:00Z",
+  "last_updated_timestamp": "2026-08-24T09:00:00-03:00",
   "source": "CoinGecko",
   "vs_currency": "brl",
   "total": 1,
@@ -135,9 +136,9 @@ Parâmetros disponíveis:
 | Parâmetro | Padrão | Descrição |
 |---|---:|---|
 | `--currency` | `brl` | Moeda: `brl`, `usd` ou `eur` |
-| `--pages` | `4` | Quantidade de páginas (1 a 40) |
+| `--pages` | `4` | Quantidade de páginas (1 a 80) |
 | `--per-page` | `250` | Registros por página (1 a 250) |
-| `--delay` | `2.0` | Intervalo em segundos entre chamadas |
+| `--delay` | `30.0` | Intervalo em segundos entre páginas (mínimo de 30) |
 | `--output` | `cryptos.json` | Caminho do arquivo de saída |
 
 ## 🧪 Qualidade do código

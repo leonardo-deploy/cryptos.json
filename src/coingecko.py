@@ -8,11 +8,13 @@ from dataclasses import dataclass
 from typing import Any
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 API_URL = "https://api.coingecko.com/api/v3/coins/markets"
 SUPPORTED_CURRENCIES = {"brl", "usd", "eur"}
+PAGES_PER_BLOCK = 4
+RETRY_DELAY_SECONDS = 10.0
+RATE_LIMIT_DELAY_SECONDS = 60.0
+BLOCK_DELAY_SECONDS = 60.0
 
 
 class CoinGeckoError(RuntimeError):
@@ -36,23 +38,12 @@ class CoinGeckoClient:
         self,
         api_key: str | None = None,
         timeout_seconds: float = 30.0,
-        max_retries: int = 3,
+        max_retries: int = 5,
         session: requests.Session | None = None,
     ) -> None:
         self.timeout_seconds = timeout_seconds
+        self.max_retries = max_retries
         self.session = session or requests.Session()
-        retry = Retry(
-            total=max_retries,
-            connect=max_retries,
-            read=max_retries,
-            status=max_retries,
-            backoff_factor=1.5,
-            status_forcelist=(429, 500, 502, 503, 504),
-            allowed_methods=frozenset({"GET"}),
-            respect_retry_after_header=True,
-            raise_on_status=False,
-        )
-        self.session.mount("https://", HTTPAdapter(max_retries=retry))
         self.session.headers.update(
             {
                 "Accept": "application/json",
@@ -68,19 +59,19 @@ class CoinGeckoClient:
         currency: str = "brl",
         pages: int = 4,
         per_page: int = 250,
-        delay_seconds: float = 2.0,
+        delay_seconds: float = 30.0,
         progress_callback: ProgressCallback | None = None,
     ) -> list[dict[str, Any]]:
-        """Coleta páginas de mercado e encerra ao encontrar uma página vazia."""
+        """Coleta páginas em blocos, repetindo falhas e preservando resultados parciais."""
         currency = currency.lower()
         if currency not in SUPPORTED_CURRENCIES:
             raise ValueError(f"Moeda não suportada: {currency}")
-        if not 1 <= pages <= 40:
-            raise ValueError("O total de páginas deve ficar entre 1 e 40.")
+        if not 1 <= pages <= 80:
+            raise ValueError("O total de páginas deve ficar entre 1 e 80.")
         if not 1 <= per_page <= 250:
             raise ValueError("O total por página deve ficar entre 1 e 250.")
-        if delay_seconds < 0:
-            raise ValueError("O intervalo não pode ser negativo.")
+        if pages > 1 and delay_seconds < 30:
+            raise ValueError("O intervalo entre páginas deve ser de pelo menos 30 segundos.")
 
         collected: list[dict[str, Any]] = []
         for page in range(1, pages + 1):
@@ -95,42 +86,64 @@ class CoinGeckoClient:
                 "price_change_percentage": "24h",
                 "locale": "pt",
             }
-            try:
-                response = self.session.get(API_URL, params=params, timeout=self.timeout_seconds)
-            except requests.Timeout as exc:
-                raise CoinGeckoError("A CoinGecko demorou demais para responder. Tente novamente.") from exc
-            except requests.RequestException as exc:
-                raise CoinGeckoError("Não foi possível conectar à CoinGecko. Verifique a conexão e tente novamente.") from exc
+            page_items: list[Any] | None = None
+            for attempt in range(1, self.max_retries + 1):
+                try:
+                    response = self.session.get(API_URL, params=params, timeout=self.timeout_seconds)
+                    if response.status_code == 429:
+                        if progress_callback:
+                            progress_callback(
+                                FetchProgress(
+                                    page,
+                                    len(collected),
+                                    f"Limite da CoinGecko na página {page}. Tentativa {attempt}/{self.max_retries}; aguardando 60 segundos…",
+                                )
+                            )
+                        if attempt < self.max_retries:
+                            time.sleep(RATE_LIMIT_DELAY_SECONDS)
+                        continue
+                    response.raise_for_status()
+                    payload = response.json()
+                    if not isinstance(payload, list):
+                        raise TypeError("A CoinGecko retornou dados em um formato inesperado.")
+                    page_items = payload
+                    break
+                except (requests.RequestException, requests.JSONDecodeError, TypeError) as exc:
+                    if progress_callback:
+                        progress_callback(
+                            FetchProgress(
+                                page,
+                                len(collected),
+                                f"Falha na página {page}, tentativa {attempt}/{self.max_retries}: {exc}",
+                            )
+                        )
+                    if attempt < self.max_retries:
+                        time.sleep(RETRY_DELAY_SECONDS)
 
-            if response.status_code == 429:
-                raise CoinGeckoError(
-                    "O limite temporário da CoinGecko foi atingido. Aguarde alguns minutos, reduza as páginas ou informe uma chave Demo."
-                )
-            try:
-                response.raise_for_status()
-            except requests.HTTPError as exc:
-                raise CoinGeckoError(f"A CoinGecko respondeu com o código HTTP {response.status_code}.") from exc
-
-            try:
-                page_items = response.json()
-            except requests.JSONDecodeError as exc:
-                raise CoinGeckoError("A CoinGecko retornou uma resposta que não é um JSON válido.") from exc
-            if not isinstance(page_items, list):
-                raise CoinGeckoError("A CoinGecko retornou dados em um formato inesperado.")
-            if not page_items:
+            if page_items is None:
                 if progress_callback:
-                    progress_callback(FetchProgress(page, len(collected), "Fim da lista encontrado."))
-                break
+                    progress_callback(
+                        FetchProgress(page, len(collected), f"Página {page} ignorada após {self.max_retries} tentativas.")
+                    )
+            elif not page_items:
+                if progress_callback:
+                    progress_callback(FetchProgress(page, len(collected), f"Página {page} retornou vazia; prosseguindo."))
+            else:
+                collected.extend(item for item in page_items if isinstance(item, dict))
+                if progress_callback:
+                    progress_callback(FetchProgress(page, len(collected), f"Página {page} concluída."))
 
-            collected.extend(item for item in page_items if isinstance(item, dict))
-            if progress_callback:
-                progress_callback(FetchProgress(page, len(collected), f"Página {page} concluída."))
-            if page < pages and len(page_items) == per_page and delay_seconds:
+            if page < pages:
                 time.sleep(delay_seconds)
-            if len(page_items) < per_page:
-                break
+                if page % PAGES_PER_BLOCK == 0:
+                    if progress_callback:
+                        progress_callback(
+                            FetchProgress(
+                                page,
+                                len(collected),
+                                f"Bloco de {PAGES_PER_BLOCK} páginas concluído; aguardando 60 segundos…",
+                            )
+                        )
+                    time.sleep(BLOCK_DELAY_SECONDS)
 
-        if not collected:
-            raise CoinGeckoError("Nenhuma criptomoeda foi encontrada para gerar o catálogo.")
         return collected
-

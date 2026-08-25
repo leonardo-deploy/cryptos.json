@@ -15,7 +15,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--currency", choices=("brl", "usd", "eur"), default="brl")
     parser.add_argument("--pages", type=int, default=4)
     parser.add_argument("--per-page", type=int, default=250)
-    parser.add_argument("--delay", type=float, default=2.0)
+    parser.add_argument("--delay", type=float, default=30.0)
     parser.add_argument("--output", type=Path, default=Path("cryptos.json"))
     return parser.parse_args()
 
@@ -41,4 +41,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
