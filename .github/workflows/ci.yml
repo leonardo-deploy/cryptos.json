@@ -30,3 +30,13 @@ jobs:
       - name: Verificar estilo
         run: python -m ruff check .
 
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validar aplicação Cloudflare
+        run: |
+          node --check collection-policy.js
+          node --check app.js
+          node --test tests/test_collection_policy.cjs tests/test_markets_function.mjs
