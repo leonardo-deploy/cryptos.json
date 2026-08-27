@@ -25,10 +25,27 @@ Use Wrangler para servir os arquivos estáticos e Pages Functions juntos:
 npx wrangler pages dev .
 ```
 
+Execute também as validações da versão web:
+
+```bash
+node --check collection-policy.js
+node --check app.js
+node --test tests/test_collection_policy.cjs tests/test_markets_function.mjs
+```
+
+## Política de coleta
+
+- No mínimo 30 segundos entre páginas consecutivas.
+- No mínimo 60 segundos entre blocos de quatro páginas.
+- Até quatro tentativas quando a CoinGecko responde com HTTP 429.
+- O cabeçalho `Retry-After` é respeitado, nunca com uma espera menor que 60 segundos.
+- Erros exibem o código HTTP retornado pela CoinGecko para facilitar o diagnóstico.
+
 ## Arquitetura
 
 - `index.html`: interface.
 - `styles.css`: tema Crypto Midnight.
+- `collection-policy.js`: intervalos mínimos e política de repetição.
 - `app.js`: coleta paginada, pesquisa, prévia e download.
 - `functions/api/markets.js`: proxy edge para CoinGecko.
 - `_routes.json`: executa Functions apenas em `/api/*`.
