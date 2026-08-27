@@ -19,7 +19,6 @@
       <div><div class="eyebrow">COINGECKO → JSON</div><h1>Dados cripto.<br><span>Prontos para integrar.</span></h1><p>Gere um catálogo limpo, atualizado e portátil de criptomoedas em poucos passos, direto da web.</p></div>
       <div class="hero-orb"><div class="orb-ring"></div><div class="orb-core">₿</div></div>
     </section>
-
     <section class="workspace">
       <aside class="panel controls">
         <div class="panel-title"><span>Configuração</span><small>COLETA</small></div>
@@ -27,19 +26,14 @@
         <label>Páginas da API <span id="pagesValue" class="value">4</span><input id="pages" type="range" min="1" max="80" value="4"></label>
         <label>Criptos por página<select id="perPage"><option>50</option><option>100</option><option>150</option><option>200</option><option selected>250</option></select></label>
         <label>Intervalo entre páginas <span id="delayValue" class="value">30 s</span><input id="delay" type="range" min="30" max="120" value="30" step="5"></label>
-        <label>Chave Demo CoinGecko <span class="optional">opcional</span><input id="apiKey" type="password" placeholder="Cole sua chave somente para esta sessão"></label>
         <div class="limit">Limite configurado <strong id="limit">1.000 ativos</strong></div>
         <button id="generate" class="primary"><span>Gerar catálogo</span><span>→</span></button>
-        <p class="privacy">A chave informada não é salva nem incluída no JSON. A coleta respeita no mínimo 30 s entre páginas e 60 s após cada bloco de 4 páginas.</p>
+        <p class="privacy">A conexão com a CoinGecko usa uma chave Demo protegida no servidor. A coleta respeita no mínimo 30 s entre páginas e 60 s após cada bloco de 4 páginas.</p>
       </aside>
-
       <section class="content">
         <div id="empty" class="empty panel"><div class="empty-icon">⌁</div><h2>Seu catálogo começa aqui</h2><p>Configure a coleta e clique em <strong>Gerar catálogo</strong>.</p><div class="features"><article><b>⚡ Atualizado</b><span>Dados de mercado via CoinGecko.</span></article><article><b>◇ Compatível</b><span>JSON pronto para apps e bancos.</span></article><article><b>↓ Portátil</b><span>Download imediato em um clique.</span></article></div></div>
         <div id="progressCard" class="panel progress-card hidden"><div class="progress-head"><div><small>GERANDO CATÁLOGO</small><h2 id="progressTitle">Preparando coleta…</h2></div><strong id="progressPct">0%</strong></div><div class="track"><div id="progressBar"></div></div><div class="stats"><div><span>Páginas</span><b id="statPages">0/0</b></div><div><span>Criptos</span><b id="statCoins">0</b></div><div><span>Status</span><b id="statStatus">Conectando</b></div></div><p id="progressMessage" class="muted"></p></div>
-        <div id="results" class="hidden">
-          <div class="metrics"><div class="metric"><span>Criptomoedas</span><b id="totalMetric">0</b></div><div class="metric"><span>Atualizado</span><b id="updatedMetric">—</b></div><div class="metric"><span>Fonte</span><b>CoinGecko</b></div><div class="metric"><span>Moeda</span><b id="currencyMetric">BRL</b></div></div>
-          <div class="panel table-panel"><div class="table-head"><div><small>PRÉVIA DO CATÁLOGO</small><h2>Ativos coletados</h2></div><input id="search" type="search" placeholder="Pesquisar Bitcoin, BTC ou ID…"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Ativo</th><th>Preço</th><th>24h</th><th>ID CoinGecko</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="table-foot"><span id="countLabel"></span><button id="download" class="primary compact">↓ Baixar cryptos.json</button></div></div>
-        </div>
+        <div id="results" class="hidden"><div class="metrics"><div class="metric"><span>Criptomoedas</span><b id="totalMetric">0</b></div><div class="metric"><span>Atualizado</span><b id="updatedMetric">—</b></div><div class="metric"><span>Fonte</span><b>CoinGecko</b></div><div class="metric"><span>Moeda</span><b id="currencyMetric">BRL</b></div></div><div class="panel table-panel"><div class="table-head"><div><small>PRÉVIA DO CATÁLOGO</small><h2>Ativos coletados</h2></div><input id="search" type="search" placeholder="Pesquisar Bitcoin, BTC ou ID…"></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Ativo</th><th>Preço</th><th>24h</th><th>ID CoinGecko</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="table-foot"><span id="countLabel"></span><button id="download" class="primary compact">↓ Baixar cryptos.json</button></div></div></div>
         <div id="error" class="error hidden"></div>
       </section>
     </section>
