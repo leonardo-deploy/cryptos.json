@@ -26,11 +26,11 @@
         <label>Moeda de referência<select id="currency"><option value="brl">Real (BRL)</option><option value="usd">Dólar (USD)</option><option value="eur">Euro (EUR)</option></select></label>
         <label>Páginas da API <span id="pagesValue" class="value">4</span><input id="pages" type="range" min="1" max="80" value="4"></label>
         <label>Criptos por página<select id="perPage"><option>50</option><option>100</option><option>150</option><option>200</option><option selected>250</option></select></label>
-        <label>Intervalo entre páginas <span id="delayValue" class="value">30 s</span><input id="delay" type="range" min="0" max="120" value="30" step="5"></label>
+        <label>Intervalo entre páginas <span id="delayValue" class="value">30 s</span><input id="delay" type="range" min="30" max="120" value="30" step="5"></label>
         <label>Chave Demo CoinGecko <span class="optional">opcional</span><input id="apiKey" type="password" placeholder="Cole sua chave somente para esta sessão"></label>
         <div class="limit">Limite configurado <strong id="limit">1.000 ativos</strong></div>
         <button id="generate" class="primary"><span>Gerar catálogo</span><span>→</span></button>
-        <p class="privacy">A chave informada não é salva nem incluída no JSON.</p>
+        <p class="privacy">A chave informada não é salva nem incluída no JSON. A coleta respeita no mínimo 30 s entre páginas e 60 s após cada bloco de 4 páginas.</p>
       </aside>
 
       <section class="content">
