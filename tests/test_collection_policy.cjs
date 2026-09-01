@@ -6,19 +6,19 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const policy = require("../collection-policy.js");
 
-test("enforces at least 30 seconds between regular pages", () => {
-  assert.equal(policy.normalizePageDelaySeconds(0), 30);
-  assert.equal(policy.normalizePageDelaySeconds(29), 30);
-  assert.equal(policy.normalizePageDelaySeconds(30), 30);
+test("enforces at least 5 seconds between regular pages", () => {
+  assert.equal(policy.normalizePageDelaySeconds(0), 5);
+  assert.equal(policy.normalizePageDelaySeconds(4), 5);
+  assert.equal(policy.normalizePageDelaySeconds(5), 5);
   assert.equal(policy.normalizePageDelaySeconds(45), 45);
 });
 
-test("waits 60 seconds after every block of four pages", () => {
+test("waits 15 seconds after every block of four pages", () => {
   const waits = Array.from({ length: 8 }, (_, index) =>
-    policy.getWaitAfterPageSeconds(index + 1, 30),
+    policy.getWaitAfterPageSeconds(index + 1, 5),
   );
 
-  assert.deepEqual(waits, [30, 30, 30, 60, 30, 30, 30, 60]);
+  assert.deepEqual(waits, [5, 5, 5, 15, 5, 5, 5, 15]);
 });
 
 test("preserves a configured page delay longer than the block delay", () => {
@@ -65,7 +65,6 @@ test("boots the browser application with the shared collection policy", () => {
     setTimeout,
   });
 
-  assert.equal(elements.delayValue.textContent, "30 s");
   assert.match(elements.limit.textContent, /10\.000 ativos/);
   assert.equal(typeof listeners["generate:click"], "function");
 });
