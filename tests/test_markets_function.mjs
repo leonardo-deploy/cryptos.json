@@ -15,7 +15,7 @@ function makeContext(search = "", headers = {}) {
     request: new Request("https://example.com/api/markets" + search, {
       headers,
     }),
-    env: {},
+    env: { COINGECKO_API_KEY: headers["X-CoinGecko-Key"] || "demo-test-key" },
   };
 }
 
@@ -74,7 +74,7 @@ test("rejects invalid pagination before contacting CoinGecko", async () => {
       return new Response("[]");
     },
     async () => {
-      const response = await onRequestGet(makeContext("?page=abc"));
+      const response = await onRequestGet(makeContext("?page=41"));
       assert.equal(response.status, 400);
       assert.equal(calls, 0);
     },
@@ -99,6 +99,23 @@ test("passes a session Demo key only in the upstream request", async () => {
       assert.equal(response.status, 200);
       assert.equal(payload[0].id, "bitcoin");
       assert.equal(upstreamHeaders["x-cg-demo-api-key"], "demo-test-key");
+    },
+  );
+});
+
+
+test("always requests 250 items per page", async () => {
+  let upstreamUrl;
+  await withMockedFetch(
+    async (url) => {
+      upstreamUrl = new URL(url);
+      return new Response("[]");
+    },
+    async () => {
+      const response = await onRequestGet(makeContext("?page=40&per_page=50"));
+      assert.equal(response.status, 200);
+      assert.equal(upstreamUrl.searchParams.get("per_page"), "250");
+      assert.equal(upstreamUrl.searchParams.get("page"), "40");
     },
   );
 });
