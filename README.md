@@ -18,7 +18,7 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 ## ✨ O que o projeto oferece
 
 - Interface moderna e responsiva construída com Streamlit.
-- Coleta paginada de até 20.000 ativos por execução.
+- Coleta fixa de até 10.000 ativos por execução: no máximo 40 páginas, sempre com 250 criptos por página.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
 - Contadores ao vivo de páginas, criptos consultadas e segundos restantes entre páginas e blocos.
@@ -34,7 +34,7 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 
 ## 🖥️ Como funciona
 
-1. Selecione a moeda, o número de páginas e a quantidade de ativos por página.
+1. Selecione a moeda; a coleta usa automaticamente até 40 páginas de 250 ativos.
 2. Opcionalmente, informe uma chave Demo da CoinGecko.
 3. Clique em **Gerar catálogo** e acompanhe o progresso.
 4. Pesquise e confira os resultados na prévia.
@@ -130,7 +130,7 @@ Também é possível usar a variável de ambiente `COINGECKO_API_KEY` localmente
 ## ⌨️ Gerar pelo terminal
 
 ```bash
-python gerar_cryptos_json.py --currency brl --pages 4 --per-page 250 --output cryptos.json
+python gerar_cryptos_json.py --currency brl --output cryptos.json
 ```
 
 Parâmetros disponíveis:
@@ -138,8 +138,6 @@ Parâmetros disponíveis:
 | Parâmetro | Padrão | Descrição |
 |---|---:|---|
 | `--currency` | `brl` | Moeda: `brl`, `usd` ou `eur` |
-| `--pages` | `4` | Quantidade de páginas (1 a 80) |
-| `--per-page` | `250` | Registros por página (1 a 250) |
 | `--delay` | `30.0` | Intervalo em segundos entre páginas (mínimo de 30) |
 | `--block-delay` | `60.0` | Pausa adicional entre blocos de quatro páginas (mínimo de 60) |
 | `--output` | `cryptos.json` | Caminho do arquivo de saída |
@@ -182,7 +180,7 @@ print(bitcoin["display_name"])
 
 ## ℹ️ Fonte e limites
 
-Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas e intervalos configuráveis, mas uma coleta muito grande ainda pode receber HTTP 429.
+Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas, intervalos configuráveis e um limite rígido de 40 páginas com 250 ativos por página, mas a API ainda pode responder com HTTP 429.
 
 ---
 
