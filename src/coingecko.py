@@ -16,6 +16,8 @@ PAGES_PER_BLOCK = 4
 RETRY_DELAY_SECONDS = 10.0
 RATE_LIMIT_DELAY_SECONDS = 60.0
 BLOCK_DELAY_SECONDS = 60.0
+MAX_PAGES = 40
+CRYPTOS_PER_PAGE = 250
 
 
 class CoinGeckoError(RuntimeError):
@@ -95,10 +97,10 @@ class CoinGeckoClient:
         currency = currency.lower()
         if currency not in SUPPORTED_CURRENCIES:
             raise ValueError(f"Moeda não suportada: {currency}")
-        if not 1 <= pages <= 80:
-            raise ValueError("O total de páginas deve ficar entre 1 e 80.")
-        if not 1 <= per_page <= 250:
-            raise ValueError("O total por página deve ficar entre 1 e 250.")
+        if not 1 <= pages <= MAX_PAGES:
+            raise ValueError(f"O total de páginas deve ficar entre 1 e {MAX_PAGES}.")
+        if per_page != CRYPTOS_PER_PAGE:
+            raise ValueError(f"O total por página deve ser exatamente {CRYPTOS_PER_PAGE}.")
         if pages > 1 and delay_seconds < 30:
             raise ValueError("O intervalo entre páginas deve ser de pelo menos 30 segundos.")
         if block_delay_seconds < BLOCK_DELAY_SECONDS:
