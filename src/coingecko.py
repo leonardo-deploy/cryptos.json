@@ -95,8 +95,8 @@ class CoinGeckoClient:
         currency = currency.lower()
         if currency not in SUPPORTED_CURRENCIES:
             raise ValueError(f"Moeda não suportada: {currency}")
-        if not 1 <= pages <= 80:
-            raise ValueError("O total de páginas deve ficar entre 1 e 80.")
+        if not 1 <= pages <= 40:
+            raise ValueError("O total de páginas deve ficar entre 1 e 40.")
         if not 1 <= per_page <= 250:
             raise ValueError("O total por página deve ficar entre 1 e 250.")
         if pages > 1 and delay_seconds < 30:

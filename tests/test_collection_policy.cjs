@@ -34,11 +34,10 @@ test("honors Retry-After without retrying sooner than 60 seconds", () => {
 
 test("boots the browser application with the shared collection policy", () => {
   const listeners = {};
+  const monthOptions = [];
   const elements = new Proxy(
     {
-      pages: { value: "4" },
-      perPage: { value: "250" },
-      delay: { value: "0" },
+      snapshotMonth: { appendChild: (option) => monthOptions.push(option) },
     },
     {
       get(target, id) {
@@ -50,6 +49,7 @@ test("boots the browser application with the shared collection policy", () => {
         element.addEventListener ||= (event, callback) => {
           listeners[id + ":" + event] = callback;
         };
+        element.appendChild ||= () => {};
         return element;
       },
     },
@@ -58,7 +58,12 @@ test("boots the browser application with the shared collection policy", () => {
 
   vm.runInNewContext(appSource, {
     CollectionPolicy: policy,
-    document: { getElementById: (id) => elements[id] },
+    document: {
+      createElement: () => ({}),
+      getElementById: (id) => elements[id],
+      querySelector: () => ({ value: "current" }),
+      querySelectorAll: () => [],
+    },
     Intl,
     URL,
     Blob,
@@ -66,7 +71,12 @@ test("boots the browser application with the shared collection policy", () => {
     setTimeout,
   });
 
-  assert.equal(elements.delayValue.textContent, "30 s");
-  assert.equal(elements.limit.textContent, "1.000 ativos");
+  assert.match(appSource, /PAGES=40,PER_PAGE=250/);
+  assert.match(appSource, /START_YEAR=2020/);
+  assert.ok(monthOptions.some((option) => option.value === "2020-01"));
+  assert.match(appSource, /atualcryptos\.json/);
+  assert.match(appSource, /cryptos\.json/);
+  assert.doesNotMatch(appSource, /\$\('pages'\)/);
+  assert.doesNotMatch(appSource, /\$\('perPage'\)/);
   assert.equal(typeof listeners["generate:click"], "function");
 });

@@ -45,8 +45,8 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(context.request.url);
     const currency = (url.searchParams.get("currency") || "brl").toLowerCase();
-    const page = boundedInteger(url.searchParams.get("page"), 1, 1, 80);
-    const perPage = boundedInteger(url.searchParams.get("per_page"), 250, 1, 250);
+    const page = boundedInteger(url.searchParams.get("page"), 1, 1, 40);
+    const perPage = boundedInteger(url.searchParams.get("per_page"), 250, 250, 250);
     if (!["brl", "usd", "eur"].includes(currency)) return json({ error: "Moeda inválida." }, 400);
     if (page === null) return json({ error: "Página inválida." }, 400);
     if (perPage === null) return json({ error: "Quantidade por página inválida." }, 400);

@@ -81,6 +81,36 @@ test("rejects invalid pagination before contacting CoinGecko", async () => {
   );
 });
 
+test("rejects pages above the collection limit", async () => {
+  let calls = 0;
+  await withMockedFetch(
+    async () => {
+      calls += 1;
+      return new Response("[]");
+    },
+    async () => {
+      const response = await onRequestGet(makeContext("?page=41"));
+      assert.equal(response.status, 400);
+      assert.equal(calls, 0);
+    },
+  );
+});
+
+test("rejects a page size other than 250", async () => {
+  let calls = 0;
+  await withMockedFetch(
+    async () => {
+      calls += 1;
+      return new Response("[]");
+    },
+    async () => {
+      const response = await onRequestGet(makeContext("?per_page=200"));
+      assert.equal(response.status, 400);
+      assert.equal(calls, 0);
+    },
+  );
+});
+
 test("passes a session Demo key only in the upstream request", async () => {
   let upstreamHeaders;
   await withMockedFetch(

@@ -9,7 +9,7 @@
 [![CoinGecko](https://img.shields.io/badge/data-CoinGecko-8DC63F)](https://www.coingecko.com/)
 [![Qualidade](https://github.com/leonardo-deploy/cryptos.json/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardo-deploy/cryptos.json/actions/workflows/ci.yml)
 
-Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pesquisável e disponível para download — diretamente pelo navegador.
+Transforme dados de mercado da CoinGecko em um arquivo JSON limpo, pesquisável e disponível para download — diretamente pelo navegador.
 
 </div>
 
@@ -18,8 +18,9 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 ## ✨ O que o projeto oferece
 
 - Interface moderna e responsiva construída com Streamlit.
-- Coleta paginada de até 20.000 ativos por execução.
+- Coleta paginada de até 10.000 ativos por execução.
 - Escolha entre BRL, USD e EUR como moeda de referência.
+- Consulta mensal disponível desde janeiro de 2020, usando o ranking vigente.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
 - Contadores ao vivo de páginas, criptos consultadas e segundos restantes entre páginas e blocos.
 - Cinco tentativas por página, pausa especial para HTTP 429 e continuidade após falhas persistentes.
@@ -34,11 +35,11 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 
 ## 🖥️ Como funciona
 
-1. Selecione a moeda, o número de páginas e a quantidade de ativos por página.
-2. Opcionalmente, informe uma chave Demo da CoinGecko.
+1. Selecione a moeda e escolha entre preços atuais ou o último dia de um mês concluído.
+2. No modo mensal, escolha o mês de referência; o ranking continuará sendo o vigente.
 3. Clique em **Gerar catálogo** e acompanhe o progresso.
 4. Pesquise e confira os resultados na prévia.
-5. Clique em **Baixar cryptos.json** para usar o arquivo em outros sistemas.
+5. Clique em **Baixar arquivo JSON**; a coleta atual usa `atualcryptos.json` e a mensal usa nomes como `janeiro2025cryptos.json`.
 
 ```mermaid
 flowchart LR

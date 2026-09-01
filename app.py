@@ -129,8 +129,8 @@ with st.sidebar:
         options=["brl", "usd", "eur"],
         format_func=lambda item: {"brl": "Real (BRL)", "usd": "Dólar (USD)", "eur": "Euro (EUR)"}[item],
     )
-    pages = st.slider("Páginas da API", min_value=1, max_value=80, value=4)
-    per_page = st.select_slider("Criptos por página", options=[50, 100, 150, 200, 250], value=250)
+    pages = 40
+    per_page = 250
     request_delay = st.slider(
         "Intervalo entre páginas (s)", min_value=30.0, max_value=120.0, value=30.0, step=5.0
     )
@@ -143,7 +143,7 @@ with st.sidebar:
         type="password",
         help="Pode reduzir erros de limite. A chave não é incluída no arquivo gerado.",
     )
-    st.caption(f"Limite configurado: até {pages * per_page:,} ativos".replace(",", "."))
+    st.caption("Coleta fixa: 40 páginas, 250 criptos por página (até 10.000 ativos).")
     generate = st.button("Gerar catálogo", type="primary", use_container_width=True, icon="🚀")
 
     st.divider()
@@ -252,9 +252,9 @@ if catalog:
     download_col, info_col = st.columns([1, 2])
     with download_col:
         st.download_button(
-            "Baixar cryptos.json",
+            "Baixar atualcryptos.json",
             data=st.session_state.catalog_bytes,
-            file_name="cryptos.json",
+            file_name="atualcryptos.json",
             mime="application/json",
             type="primary",
             use_container_width=True,
