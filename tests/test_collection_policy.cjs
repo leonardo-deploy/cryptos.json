@@ -36,8 +36,7 @@ test("boots the browser application with the shared collection policy", () => {
   const listeners = {};
   const elements = new Proxy(
     {
-      pages: { value: "4" },
-      perPage: { value: "250" },
+      limit: { textContent: "40 páginas × 250 criptos — até 10.000 ativos" },
       delay: { value: "0" },
     },
     {
@@ -67,6 +66,6 @@ test("boots the browser application with the shared collection policy", () => {
   });
 
   assert.equal(elements.delayValue.textContent, "30 s");
-  assert.equal(elements.limit.textContent, "1.000 ativos");
+  assert.match(elements.limit.textContent, /10\.000 ativos/);
   assert.equal(typeof listeners["generate:click"], "function");
 });
