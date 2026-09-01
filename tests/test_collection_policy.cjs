@@ -49,6 +49,7 @@ test("boots the browser application with the shared collection policy", () => {
         element.addEventListener ||= (event, callback) => {
           listeners[id + ":" + event] = callback;
         };
+        element.appendChild ||= () => {};
         return element;
       },
     },
@@ -57,7 +58,12 @@ test("boots the browser application with the shared collection policy", () => {
 
   vm.runInNewContext(appSource, {
     CollectionPolicy: policy,
-    document: { getElementById: (id) => elements[id] },
+    document: {
+      getElementById: (id) => elements[id],
+      createElement: () => ({}),
+      querySelector: () => ({ value: "current" }),
+      querySelectorAll: () => [],
+    },
     Intl,
     URL,
     Blob,
