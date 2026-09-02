@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🪙 CryptoJSON Studio
+# 🪙 cryptos.json Studio
 
 ### Um gerador elegante de catálogos de criptomoedas, pronto para rodar no Streamlit.
 

@@ -1,2 +1,2 @@
-"""Núcleo do CryptoJSON Studio."""
+"""Núcleo do cryptos.json Studio."""
 
