@@ -1,4 +1,6 @@
 const MIN_RETRY_AFTER_SECONDS = 60;
+const MAX_PAGES = 40;
+const CRYPTOS_PER_PAGE = 250;
 const RESPONSE_HEADERS = {
   "content-type": "application/json; charset=utf-8",
   "cache-control": "no-store",
@@ -45,11 +47,10 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(context.request.url);
     const currency = (url.searchParams.get("currency") || "brl").toLowerCase();
-    const page = boundedInteger(url.searchParams.get("page"), 1, 1, 80);
-    const perPage = boundedInteger(url.searchParams.get("per_page"), 250, 1, 250);
+    const page = boundedInteger(url.searchParams.get("page"), 1, 1, MAX_PAGES);
+    const perPage = CRYPTOS_PER_PAGE;
     if (!["brl", "usd", "eur"].includes(currency)) return json({ error: "Moeda inválida." }, 400);
     if (page === null) return json({ error: "Página inválida." }, 400);
-    if (perPage === null) return json({ error: "Quantidade por página inválida." }, 400);
 
     const secretKey = typeof context.env?.COINGECKO_API_KEY === "string"
       ? context.env.COINGECKO_API_KEY.trim()

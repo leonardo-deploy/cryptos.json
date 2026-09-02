@@ -14,6 +14,9 @@ import streamlit.components.v1 as components
 from src.coingecko import CoinGeckoClient, CoinGeckoError, FetchProgress
 from src.exporter import build_catalog, catalog_to_json
 
+MAX_PAGES = 40
+CRYPTOS_PER_PAGE = 250
+
 st.set_page_config(
     page_title="CryptosJson",
     page_icon="🪙",
@@ -129,8 +132,8 @@ with st.sidebar:
         options=["brl", "usd", "eur"],
         format_func=lambda item: {"brl": "Real (BRL)", "usd": "Dólar (USD)", "eur": "Euro (EUR)"}[item],
     )
-    pages = st.slider("Páginas da API", min_value=1, max_value=80, value=4)
-    per_page = st.select_slider("Criptos por página", options=[50, 100, 150, 200, 250], value=250)
+    pages = MAX_PAGES
+    per_page = CRYPTOS_PER_PAGE
     request_delay = st.slider(
         "Intervalo entre páginas (s)", min_value=30.0, max_value=120.0, value=30.0, step=5.0
     )
@@ -143,7 +146,7 @@ with st.sidebar:
         type="password",
         help="Pode reduzir erros de limite. A chave não é incluída no arquivo gerado.",
     )
-    st.caption(f"Limite configurado: até {pages * per_page:,} ativos".replace(",", "."))
+    st.caption(f"Coleta fixa: até {pages} páginas de {per_page} criptos — {pages * per_page:,} ativos".replace(",", "."))
     generate = st.button("Gerar catálogo", type="primary", use_container_width=True, icon="🚀")
 
     st.divider()
@@ -266,7 +269,7 @@ if catalog:
             unsafe_allow_html=True,
         )
 else:
-    st.info("Configure a coleta na barra lateral e clique em **Gerar catálogo**.", icon="💡")
+    st.info("Selecione a moeda e clique em **Gerar catálogo**. A coleta usa até 40 páginas de 250 criptos.", icon="💡")
     feature_a, feature_b, feature_c = st.columns(3)
     with feature_a:
         st.markdown("### ⚡ Atualizado\nPreços e dados de mercado obtidos diretamente da CoinGecko.")

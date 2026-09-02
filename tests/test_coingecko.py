@@ -45,8 +45,11 @@ def test_fetch_explains_rate_limit() -> None:
 def test_fetch_enforces_page_and_delay_limits() -> None:
     client = CoinGeckoClient(session=Mock(headers={}))
 
-    with pytest.raises(ValueError, match="entre 1 e 80"):
-        client.fetch_markets(pages=81)
+    with pytest.raises(ValueError, match="entre 1 e 40"):
+        client.fetch_markets(pages=41)
+
+    with pytest.raises(ValueError, match="exatamente 250"):
+        client.fetch_markets(per_page=249)
 
     with pytest.raises(ValueError, match="pelo menos 30 segundos"):
         client.fetch_markets(pages=2, delay_seconds=29)
@@ -65,7 +68,6 @@ def test_fetch_reports_page_and_block_countdowns() -> None:
     with patch("src.coingecko.time.sleep") as sleep:
         client.fetch_markets(
             pages=5,
-            per_page=1,
             delay_seconds=30,
             progress_callback=events.append,
         )

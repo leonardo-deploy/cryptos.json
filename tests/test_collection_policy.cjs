@@ -6,19 +6,19 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const policy = require("../collection-policy.js");
 
-test("enforces at least 30 seconds between regular pages", () => {
-  assert.equal(policy.normalizePageDelaySeconds(0), 30);
-  assert.equal(policy.normalizePageDelaySeconds(29), 30);
-  assert.equal(policy.normalizePageDelaySeconds(30), 30);
+test("enforces at least 5 seconds between regular pages", () => {
+  assert.equal(policy.normalizePageDelaySeconds(0), 5);
+  assert.equal(policy.normalizePageDelaySeconds(4), 5);
+  assert.equal(policy.normalizePageDelaySeconds(5), 5);
   assert.equal(policy.normalizePageDelaySeconds(45), 45);
 });
 
-test("waits 60 seconds after every block of four pages", () => {
+test("waits 15 seconds after every block of four pages", () => {
   const waits = Array.from({ length: 8 }, (_, index) =>
-    policy.getWaitAfterPageSeconds(index + 1, 30),
+    policy.getWaitAfterPageSeconds(index + 1, 5),
   );
 
-  assert.deepEqual(waits, [30, 30, 30, 60, 30, 30, 30, 60]);
+  assert.deepEqual(waits, [5, 5, 5, 15, 5, 5, 5, 15]);
 });
 
 test("preserves a configured page delay longer than the block delay", () => {
@@ -36,8 +36,7 @@ test("boots the browser application with the shared collection policy", () => {
   const listeners = {};
   const elements = new Proxy(
     {
-      pages: { value: "4" },
-      perPage: { value: "250" },
+      limit: { textContent: "40 páginas × 250 criptos — até 10.000 ativos" },
       delay: { value: "0" },
     },
     {
@@ -50,6 +49,7 @@ test("boots the browser application with the shared collection policy", () => {
         element.addEventListener ||= (event, callback) => {
           listeners[id + ":" + event] = callback;
         };
+        element.appendChild ||= () => {};
         return element;
       },
     },
@@ -58,7 +58,12 @@ test("boots the browser application with the shared collection policy", () => {
 
   vm.runInNewContext(appSource, {
     CollectionPolicy: policy,
-    document: { getElementById: (id) => elements[id] },
+    document: {
+      getElementById: (id) => elements[id],
+      createElement: () => ({}),
+      querySelector: () => ({ value: "current" }),
+      querySelectorAll: () => [],
+    },
     Intl,
     URL,
     Blob,
@@ -66,7 +71,6 @@ test("boots the browser application with the shared collection policy", () => {
     setTimeout,
   });
 
-  assert.equal(elements.delayValue.textContent, "30 s");
-  assert.equal(elements.limit.textContent, "1.000 ativos");
+  assert.match(elements.limit.textContent, /10\.000 ativos/);
   assert.equal(typeof listeners["generate:click"], "function");
 });

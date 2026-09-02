@@ -18,7 +18,8 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 ## ✨ O que o projeto oferece
 
 - Interface moderna e responsiva construída com Streamlit.
-- Coleta paginada de até 20.000 ativos por execução.
+- Catálogo atual com até 10.000 ativos por execução: no máximo 40 páginas, sempre com 250 criptos por página.
+- Catálogo mensal dos últimos 365 dias, usando o preço do último dia do mês escolhido para até 250 ativos.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
 - Contadores ao vivo de páginas, criptos consultadas e segundos restantes entre páginas e blocos.
@@ -34,11 +35,11 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 
 ## 🖥️ Como funciona
 
-1. Selecione a moeda, o número de páginas e a quantidade de ativos por página.
-2. Opcionalmente, informe uma chave Demo da CoinGecko.
+1. Selecione a moeda e escolha entre **Momento atual** e **Fechamento mensal**.
+2. No modo mensal, selecione um dos meses disponíveis dentro dos últimos 365 dias.
 3. Clique em **Gerar catálogo** e acompanhe o progresso.
 4. Pesquise e confira os resultados na prévia.
-5. Clique em **Baixar cryptos.json** para usar o arquivo em outros sistemas.
+5. Baixe `cryptos.json` no modo atual ou um arquivo como `janeiro2025.json` no modo mensal.
 
 ```mermaid
 flowchart LR
@@ -130,7 +131,7 @@ Também é possível usar a variável de ambiente `COINGECKO_API_KEY` localmente
 ## ⌨️ Gerar pelo terminal
 
 ```bash
-python gerar_cryptos_json.py --currency brl --pages 4 --per-page 250 --output cryptos.json
+python gerar_cryptos_json.py --currency brl --output cryptos.json
 ```
 
 Parâmetros disponíveis:
@@ -138,8 +139,6 @@ Parâmetros disponíveis:
 | Parâmetro | Padrão | Descrição |
 |---|---:|---|
 | `--currency` | `brl` | Moeda: `brl`, `usd` ou `eur` |
-| `--pages` | `4` | Quantidade de páginas (1 a 80) |
-| `--per-page` | `250` | Registros por página (1 a 250) |
 | `--delay` | `30.0` | Intervalo em segundos entre páginas (mínimo de 30) |
 | `--block-delay` | `60.0` | Pausa adicional entre blocos de quatro páginas (mínimo de 60) |
 | `--output` | `cryptos.json` | Caminho do arquivo de saída |
@@ -182,7 +181,7 @@ print(bitcoin["display_name"])
 
 ## ℹ️ Fonte e limites
 
-Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas e intervalos configuráveis, mas uma coleta muito grande ainda pode receber HTTP 429.
+Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas e intervalos automáticos. A coleta atual tem limite rígido de 40 páginas com 250 ativos por página. O histórico da chave Demo cobre somente os últimos 365 dias e é consultado individualmente por ativo; por isso, o modo mensal é limitado a 250 ativos e pode levar mais tempo.
 
 ---
 
