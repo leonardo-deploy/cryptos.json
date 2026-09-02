@@ -18,7 +18,7 @@ MAX_PAGES = 40
 CRYPTOS_PER_PAGE = 250
 
 st.set_page_config(
-    page_title="CryptosJson",
+    page_title="cryptos.json Studio",
     page_icon="🪙",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -27,7 +27,7 @@ st.set_page_config(
 components.html(
     """
     <script>
-      const title = "CryptosJson";
+      const title = "cryptos.json Studio";
       const documents = [];
       let currentWindow = window;
       while (true) {
@@ -118,7 +118,7 @@ st.markdown(
     """
     <section class="hero">
       <div class="eyebrow">COINGECKO → JSON</div>
-      <h1>CryptoJSON Studio</h1>
+      <h1>cryptos.json Studio</h1>
       <p>Gere um catálogo limpo, atualizado e pronto para integrar às suas aplicações — sem editar código e com download imediato.</p>
     </section>
     """,
