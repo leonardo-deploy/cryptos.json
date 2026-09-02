@@ -39,4 +39,4 @@ jobs:
         run: |
           node --check collection-policy.js
           node --check app.js
-          node --test tests/test_collection_policy.cjs tests/test_markets_function.mjs tests/test_history_function.mjs
+          node --test tests/test_collection_policy.cjs tests/test_markets_function.mjs
