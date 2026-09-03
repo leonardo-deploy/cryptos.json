@@ -18,7 +18,8 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 ## ✨ O que o projeto oferece
 
 - Interface moderna e responsiva construída com Streamlit.
-- Coleta fixa de até 10.000 ativos por execução: no máximo 40 páginas, sempre com 250 criptos por página.
+- Coleta em ordem decrescente de valor de mercado, mantendo somente ativos com market cap de pelo menos R$ 1.000.000.
+- Parada automática assim que a listagem ordenada da CoinGecko cruza esse limite, com no máximo 40 páginas de 250 ativos como proteção.
 - Escolha entre BRL, USD e EUR como moeda de referência.
 - Progresso da coleta em tempo real e mensagens de erro amigáveis.
 - Contadores ao vivo de páginas, criptos consultadas e segundos restantes entre páginas e blocos.
@@ -34,11 +35,12 @@ Transforme dados de mercado da CoinGecko em um arquivo `cryptos.json` limpo, pes
 
 ## 🖥️ Como funciona
 
-1. Selecione a moeda; a coleta usa automaticamente até 40 páginas de 250 ativos.
-2. Opcionalmente, informe uma chave Demo da CoinGecko.
-3. Clique em **Gerar catálogo** e acompanhe o progresso.
-4. Pesquise e confira os resultados na prévia.
-5. Clique em **Baixar cryptos.json** para usar o arquivo em outros sistemas.
+1. Selecione BRL; a coleta consulta páginas de 250 ativos em ordem decrescente de valor de mercado.
+2. A coleta encerra automaticamente ao encontrar market cap inferior a R$ 1.000.000 e descarta registros abaixo do limite.
+3. Opcionalmente, informe uma chave Demo da CoinGecko.
+4. Clique em **Gerar catálogo** e acompanhe o progresso.
+5. Pesquise e confira os resultados na prévia.
+6. Clique em **Baixar cryptos.json** para usar o arquivo em outros sistemas.
 
 ```mermaid
 flowchart LR
@@ -180,7 +182,7 @@ print(bitcoin["display_name"])
 
 ## ℹ️ Fonte e limites
 
-Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas, intervalos configuráveis e um limite rígido de 40 páginas com 250 ativos por página, mas a API ainda pode responder com HTTP 429.
+Os dados são fornecidos pela [CoinGecko API](https://docs.coingecko.com/reference/coins-markets). A disponibilidade e a frequência permitida dependem do plano e dos limites vigentes da API. O projeto implementa timeout, retentativas, intervalos configuráveis, filtro mínimo de R$ 1.000.000 de market cap e um limite de segurança de 40 páginas com 250 ativos por página, mas a API ainda pode responder com HTTP 429.
 
 ---
 

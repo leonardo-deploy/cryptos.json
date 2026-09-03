@@ -35,8 +35,11 @@ node --test tests/test_collection_policy.cjs tests/test_markets_function.mjs
 
 ## Política de coleta
 
-- No mínimo 30 segundos entre páginas consecutivas.
-- No mínimo 60 segundos entre blocos de quatro páginas.
+- A consulta usa BRL e ordenação decrescente por capitalização de mercado.
+- Somente criptos com market cap maior ou igual a R$ 1.000.000 entram no catálogo.
+- A coleta para automaticamente quando uma página cruza o valor mínimo, mantendo 40 páginas como limite de segurança.
+- No mínimo 5 segundos entre páginas consecutivas.
+- No mínimo 15 segundos entre blocos de quatro páginas.
 - Até quatro tentativas quando a CoinGecko responde com HTTP 429.
 - O cabeçalho `Retry-After` é respeitado, nunca com uma espera menor que 60 segundos.
 - Erros exibem o código HTTP retornado pela CoinGecko para facilitar o diagnóstico.
