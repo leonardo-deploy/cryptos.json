@@ -1,5 +1,5 @@
 const MIN_RETRY_AFTER_SECONDS = 60;
-const MAX_PAGES = 40;
+const MAX_PAGES = 25;
 const CRYPTOS_PER_PAGE = 250;
 const RESPONSE_HEADERS = {
   "content-type": "application/json; charset=utf-8",
